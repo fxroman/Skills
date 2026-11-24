@@ -9,14 +9,14 @@ git rev-parse --git-dir >/dev/null 2>&1 || { echo "WATCH-ERROR: $repo не git-�
 # Снимок: "origin/<ветка> <sha>" по всем удалённым веткам, без origin/HEAD.
 snap() { git for-each-ref --format='%(refname:short) %(objectname)' refs/remotes/origin | grep -v '^origin/HEAD \|^origin ' | sort; }
 
-git fetch -q --prune origin 2>/dev/null
+git fetch -q --prune --no-write-fetch-head origin 2>/dev/null
 prev=$(snap)
 fails=0
 echo "WATCH-START branches=$(printf '%s\n' "$prev" | grep -c .) interval=${interval}s"
 
 while true; do
   sleep "$interval"
-  if git fetch -q --prune origin 2>/dev/null; then
+  if git fetch -q --prune --no-write-fetch-head origin 2>/dev/null; then
     fails=0
     cur=$(snap)
     if [ "$cur" != "$prev" ]; then
